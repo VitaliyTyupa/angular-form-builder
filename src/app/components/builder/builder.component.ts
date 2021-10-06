@@ -1,4 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {JwtTokenService} from '../../services/core-services/auth-services/jwt-token.service';
 
 @Component({
   selector: 'app-builder',
@@ -12,10 +13,16 @@ export class BuilderComponent implements OnInit {
     components: []
   };
   formName = '';
+  token = '';
+  isNeedToken: boolean;
 
-  constructor() { }
+  constructor(
+    private jwtTokenService: JwtTokenService,
+  ) { }
 
   ngOnInit(): void {
+    this.checkToken();
+    console.log(this.isNeedToken);
   }
 
   onChange(event): void {
@@ -32,5 +39,15 @@ export class BuilderComponent implements OnInit {
     };
     collection.push(newForm);
     localStorage.setItem('customFormTemplates', JSON.stringify(collection));
+  }
+
+  checkToken(): void {
+    this.isNeedToken = !this.jwtTokenService.hasToken();
+  }
+
+  setToken(token): void {
+    this.jwtTokenService.token = token;
+    this.token = null;
+    this.isNeedToken = !this.jwtTokenService.hasToken();
   }
 }

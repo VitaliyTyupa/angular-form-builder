@@ -23,7 +23,7 @@ export class JwtTokenService {
   }
 
   hasToken(): boolean {
-    return !!this.token && this.isTokenAvailable();
+    return !!this.token && this.isTokenAvailable(this.token);
   }
 
   removeToken(): void {
@@ -31,14 +31,14 @@ export class JwtTokenService {
   }
 
   patchHeaders(url: string, headers: {[key: string]: string}): void {
-    if (this.isTokenAvailable()) {
+    if (this.isTokenAvailable(this.token)) {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
   }
 
-  isTokenAvailable(): boolean {
+  isTokenAvailable(token): boolean {
     try {
-      const { exp } = jwt_decode<{exp: number, refresh: string, sub: number}>(this.token);
+      const { exp } = jwt_decode<{exp: number, refresh: string, sub: number}>(token);
       const currentTime = new Date().getTime() / 1000;
       return exp > currentTime;
     } catch {
