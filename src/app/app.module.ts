@@ -2,13 +2,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { BuilderComponent } from './builder/builder.component';
+import {FormioModule} from '@formio/angular';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BuilderComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -120,5 +120,8 @@
       }
     }
   },
-  "defaultProject": "angular-form-builder"
+  "defaultProject": "angular-form-builder",
+  "cli": {
+    "analytics": false
+  }
 }
