@@ -90,4 +90,9 @@ export class BuilderComponent implements OnInit {
       this.checkToken();
     });
   }
+
+  clearForm(): void {
+    this.form = {components: []};
+    this.jsonElement.nativeElement.innerHTML = '';
+  }
 }
