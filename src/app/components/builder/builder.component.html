@@ -1,7 +1,7 @@
-<div class="container-fluid">
-  <div class="row mt-2" *ngIf="isNeedToken">
+<div class="container-fluid" *ngIf="!isLogged">
+  <div class="row mt-2" >
     <div class="col-4">
-      <label for="token">You are unauthorized. Set your JWT Token</label>
+      <label for="token">You are unauthorized. Set your JWT Token or log in</label>
     </div>
     <div class="col-6">
       <div class="form-group">
@@ -12,11 +12,20 @@
       <button type="submit" class="btn btn-primary ml-2" (click)="setToken(token)">Set token</button>
     </div>
   </div>
+  <div class="row mt-2">
+    <div class="form-group">
+      <input type="email" class="form-control ml-2" id="email" [(ngModel)]="user.email">
+      <input type="password" class="form-control ml-2" id="password" [(ngModel)]="user.password">
+      <button type="submit" class="btn btn-primary ml-2" (click)="login(user)">Log in</button>
+    </div>
+  </div>
 </div>
-<div class="container-fluid"  *ngIf="!isNeedToken">
+<div class="container-fluid"  *ngIf="isLogged">
 <div class="row">
   <div class="col-12 row-padding">
     <button type="button" class="btn btn-primary" (click)="saveForm(form)">Save Form</button>
+    <button type="button" class="btn btn-primary" (click)="updateForm()">update</button>
+    <button type="button" class="btn btn-primary" (click)="deleteForm()">delete</button>
     <button type="button" class="btn btn-outline-danger">Clear Form</button>
   </div>
 </div>

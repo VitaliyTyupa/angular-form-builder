@@ -1,5 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {JwtTokenService} from '../../services/core-services/auth-services/jwt-token.service';
+import {UserApiService} from '../../services/core-services/api/user-api/user-api.service';
+import {FormApiService} from '../../services/core-services/api/form-api/form-api.service';
 
 @Component({
   selector: 'app-builder',
@@ -14,15 +16,23 @@ export class BuilderComponent implements OnInit {
   };
   formName = '';
   token = '';
-  isNeedToken: boolean;
+  isLogged: boolean;
+  user = {
+    password: null,
+    email: null,
+  };
 
   constructor(
     private jwtTokenService: JwtTokenService,
+    private userApiService: UserApiService,
+    private formApiService: FormApiService,
   ) { }
 
   ngOnInit(): void {
+    this.userApiService.signedInUser().subscribe(res => {
+      console.log(res);
+    });
     this.checkToken();
-    console.log(this.isNeedToken);
   }
 
   onChange(event): void {
@@ -31,23 +41,53 @@ export class BuilderComponent implements OnInit {
   }
 
   saveForm(form): void {
-    const collection = JSON.parse(localStorage.getItem('customFormTemplates') ?? '[]');
-    console.log(collection);
-    const newForm = {
+    this.formApiService.saveForm({
       name: this.formName,
-      template: form
-    };
-    collection.push(newForm);
-    localStorage.setItem('customFormTemplates', JSON.stringify(collection));
+      active: true,
+      metadata: form,
+    }).subscribe(res => {
+      console.log(res);
+    });
+  }
+  updateForm(): void {
+    this.formApiService.updateForm('1', {
+      name: this.formName,
+      active: true,
+      metadata: this.form,
+    }).subscribe(res => {
+      console.log(res);
+    });
+  }
+  deleteForm(): void {
+    this.formApiService.deleteForm('1').subscribe(res => {
+      console.log(res);
+    });
   }
 
   checkToken(): void {
-    this.isNeedToken = !this.jwtTokenService.hasToken();
+    this.isLogged = this.jwtTokenService.hasToken();
   }
 
   setToken(token): void {
     this.jwtTokenService.token = token;
     this.token = null;
-    this.isNeedToken = !this.jwtTokenService.hasToken();
+    this.checkToken();
+  }
+
+  login(user): void {
+    const credentials = {
+      user: {
+        email: user.email,
+        password: user.password,
+        remember_me: false,
+      },
+      commit: 'Log in',
+      format: 'json'
+    };
+    this.userApiService.signIn(credentials).subscribe(val => {
+      this.user.email = null;
+      this.user.password = null;
+      this.checkToken();
+    });
   }
 }
