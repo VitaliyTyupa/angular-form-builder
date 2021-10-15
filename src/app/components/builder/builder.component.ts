@@ -2,6 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {JwtTokenService} from '../../services/core-services/auth-services/jwt-token.service';
 import {UserApiService} from '../../services/core-services/api/user-api/user-api.service';
 import {FormApiService} from '../../services/core-services/api/form-api/form-api.service';
+import {Formio} from 'formiojs';
 
 @Component({
   selector: 'app-builder',
@@ -12,15 +13,18 @@ export class BuilderComponent implements OnInit {
 
   @ViewChild('json') jsonElement?: ElementRef;
   public form = {
-    components: []
+    id: null,
+    metadata: { components: []},
+    name: 'New Form',
+    active: false
   };
-  formName = '';
   token = '';
   isLogged: boolean;
   user = {
     password: null,
     email: null,
   };
+  formList$ = this.formApiService.getForms();
 
   constructor(
     private jwtTokenService: JwtTokenService,
@@ -29,39 +33,25 @@ export class BuilderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.userApiService.signedInUser().subscribe(res => {
-      console.log(res);
-    });
+    Formio.setBaseUrl(location.origin);
     this.checkToken();
   }
 
-  onChange(event): void {
+  onChangeForm(form): void {
     this.jsonElement.nativeElement.innerHTML = '';
-    this.jsonElement.nativeElement.appendChild(document.createTextNode(JSON.stringify(event.form, null, 4)));
+    this.jsonElement.nativeElement.appendChild(document.createTextNode(JSON.stringify(form, null, 4)));
   }
 
   saveForm(form): void {
-    this.formApiService.saveForm({
-      name: this.formName,
-      active: true,
-      metadata: form,
-    }).subscribe(res => {
-      console.log(res);
-    });
+    this.getAction(form).subscribe();
   }
-  updateForm(): void {
-    this.formApiService.updateForm('1', {
-      name: this.formName,
-      active: true,
-      metadata: this.form,
-    }).subscribe(res => {
-      console.log(res);
-    });
-  }
-  deleteForm(): void {
-    this.formApiService.deleteForm('1').subscribe(res => {
-      console.log(res);
-    });
+
+  getAction(form): any {
+    if (form.id) {
+      return this.formApiService.updateForm(form.id, form);
+    } else {
+      return this.formApiService.createForm(form);
+    }
   }
 
   checkToken(): void {
@@ -92,7 +82,28 @@ export class BuilderComponent implements OnInit {
   }
 
   clearForm(): void {
-    this.form = {components: []};
+    this.form = {
+      id: null,
+      metadata: { components: []},
+      name: 'New Form',
+      active: false
+    };
     this.jsonElement.nativeElement.innerHTML = '';
+  }
+
+  getForm(): void {
+    this.formApiService.getForm(4).subscribe();
+  }
+
+
+  deleteForm(): void {
+    this.formApiService.deleteForm('1').subscribe(res => {
+      console.log(res);
+    });
+  }
+
+  selectForm(form): void {
+    this.form = form;
+    this.onChangeForm(form.metadata);
   }
 }

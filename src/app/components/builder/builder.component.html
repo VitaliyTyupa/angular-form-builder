@@ -21,20 +21,27 @@
 </div>
 <div class="container-fluid"  *ngIf="isLogged">
 <div class="row mt-3 pr-3">
-  <div class="col-7 form-inline">
-    <label for="formName" class="mr-2 h5">Form Name</label>
-    <input type="text" class="form-control" id="formName" aria-describedby="formName" [(ngModel)]="formName">
+  <div class=" col-3 dropdown" *ngIf="formList$ | async as formList">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Allowed forms
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li class="dropdown-item" (click)="clearForm()">Create New Form</li>
+      <li class="dropdown-item" *ngFor="let item of formList" (click)="selectForm(item)">{{item.name || 'no name'}}</li>
+    </ul>
+  </div>
+  <div class="col-4 form-inline">
+    <label for="formName" class="mr-2">Form Name</label>
+    <input type="text" class="form-control" id="formName" aria-describedby="formName" [(ngModel)]="form.name">
   </div>
   <div class="col-5">
     <button type="button" class="btn btn-primary" (click)="saveForm(form)">Save Form</button>
-    <button type="button" class="btn btn-primary" (click)="updateForm()">update</button>
-    <button type="button" class="btn btn-primary" (click)="deleteForm()">delete</button>
     <button type="button" class="btn btn-outline-danger" (click)="clearForm()">Clear Form</button>
   </div>
 </div>
   <div class="row mt-3 pr-3">
     <div class="col-9">
-      <form-builder [form]="form" (change)="onChange($event)"></form-builder>
+      <form-builder [form]="form.metadata" (change)="onChangeForm($event.form)" #fb></form-builder>
     </div>
     <div class="col-3">
       <h3>JSON of Form</h3>
@@ -44,5 +51,3 @@
     </div>
   </div>
 </div>
-
-

@@ -15,7 +15,14 @@ export class FormApiService {
     private mainApiService: MainApiService,
   ) { }
 
-  saveForm(body): Observable<any> {
+  getForms(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/custom_forms`);
+  }
+  getForm(id): Observable<any> {
+    return this.http.get(`${this.baseUrl}/custom_forms/${id}`);
+  }
+
+  createForm(body): Observable<any> {
     return this.http.post(`${this.baseUrl}/custom_forms`, body);
   }
 
